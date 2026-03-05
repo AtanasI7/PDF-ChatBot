@@ -45,13 +45,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    # 'rest_framework_swagger',
-    'rest_framework.authtoken',
     'django.contrib.sites',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
     'dj_rest_auth',
     'dj_rest_auth.registration',
 
@@ -86,13 +90,27 @@ TEMPLATES = [
     },
 ]
 
+SITE_ID = 1
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+}
+
+REST_AUTH = {
+    'USE_JWT': True,
+    # 'JWT_AUTH_COOKIE': 'access-token',
+    # 'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
+    # 'JWT_AUTH_HTTPONLY': True,
+    # 'JWT_AUTH_SECURE': False,  # Set True in production
+    # 'JWT_AUTH_SAMESITE': 'Lax',
+    # 'JWT_AUTH_RETURN_EXPIRATION': True,
+    'SESSION_LOGIN': False,
 }
 
 
@@ -140,23 +158,20 @@ USE_I18N = True
 
 USE_TZ = True
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
-
-ACCOUNT_EMAIL_VERIFICATION = "none"
-
-REST_USE_JWT = True
-
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
-AUTH_USER_MODEL = 'users.User'
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
-SITE_ID = 1
+
+AUTH_USER_MODEL = 'users.User'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
