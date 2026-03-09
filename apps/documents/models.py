@@ -3,6 +3,12 @@ from django.conf import settings
 
 
 class Document(models.Model):
+    class StatusInfo(models.TextChoices):
+        UPLOADED = "uploaded", "Uploaded"
+        PROCESSING = "processing", "Processing"
+        READY = "ready", "Ready"
+        FAILED = "failed", "Failed"
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,13 +26,12 @@ class Document(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     status = models.CharField(
-        choices=[
-            ("uploaded", "Uploaded"),
-            ("processing", "Processing"),
-            ("ready", "Ready"),
-            ("failed", "Failed")
-        ]
+        max_length=20,
+        choices=StatusInfo.choices,
+        default=StatusInfo.UPLOADED,
     )
+
+    index_dir = models.CharField(max_length=500, blank=True, default="")
 
     def __str__(self):
         return f"{self.title} ({self.owner.email})"

@@ -15,6 +15,7 @@ urlpatterns = [
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/health/', health),
     path("api/documents/", include("apps.documents.urls")),
+    path("api/chats/", include("apps.chats.urls"))
 ]
 
 if settings.DEBUG:
