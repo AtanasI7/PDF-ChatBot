@@ -1,0 +1,89 @@
+Bad Request: /api/documents/
+[09/Mar/2026 18:35:25] "POST /api/documents/ HTTP/1.1" 400 71
+Internal Server Error: /api/documents/
+Traceback (most recent call last):
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 56, in dependable_faiss_import
+    import faiss
+ModuleNotFoundError: No module named 'faiss'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\apps\documents\views.py", line 24, in perform_create
+    index_dir = AgentService.build_document_index(document)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\apps\agent\services.py", line 30, in build_document_index
+    vectorstore = build_faiss_index(
+        chunks,
+        embedding_model="text-embedding-3-small",
+    )
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\apps\agent\rag\indexing.py", line 16, in build_faiss_index
+    vs = FAISS.from_documents(chunks, embeddings)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\langchain_core\vectorstores\base.py", line 814, in from_documents
+    return cls.from_texts(texts, embedding, metadatas=metadatas, **kwargs)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 1044, in from_texts
+    return cls.__from(
+           ~~~~~~~~~~^
+        texts,
+        ^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 996, in __from
+    faiss = dependable_faiss_import()
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\langchain_community\vectorstores\faiss.py", line 58, in dependable_faiss_import
+    raise ImportError(
+    ...<3 lines>...
+    )
+ImportError: Could not import faiss python package. Please install it with `pip install faiss-gpu` (for CUDA supported GPU) or `pip install faiss-cpu` (depending on Python version).
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\rest_framework\mixins.py", line 19, in create
+    self.perform_create(serializer)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\apps\documents\views.py", line 30, in perform_create
+    document.save(update_fields=["status"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\django\db\models\base.py", line 874, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\django\db\models\base.py", line 966, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\atana\PythonLearning\PDF-ChatBot\.venv\Lib\site-packages\django\db\models\base.py", line 1124, in _save_table
+    raise self.NotUpdated(
+        "Save with update_fields did not affect any rows."
+    )
+apps.documents.models.Document.NotUpdated: Save with update_fields did not affect any rows.

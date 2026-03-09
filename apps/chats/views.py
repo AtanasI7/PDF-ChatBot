@@ -28,21 +28,25 @@ class ChatSessionViewSet(ModelViewSet):
     def ask(self, request, pk=None):
         session = self.get_object()
 
+        if session.document.status != session.document.StatusInfo.READY:
+            return Response(
+                {"detail": "Document is not ready for chat yet."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = AskSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         question = serializer.validated_data["question"]
 
-        # взимаме последните N съобщения за контекст (за начало 20)
         history_qs = session.messages.order_by("-created_at")[:20]
         history = [
-            {"role": m.role, "content": m.content}
-            for m in reversed(list(history_qs))
+            {"role": message.role, "content": message.content}
+            for message in reversed(list(history_qs))
         ]
 
         document_path = session.document.file.path
 
         with transaction.atomic():
-            # 1) записваме user message
             Message.objects.create(
                 session=session,
                 role=Message.Role.USER,
@@ -50,15 +54,13 @@ class ChatSessionViewSet(ModelViewSet):
                 metadata={},
             )
 
-            # 2) питаме агента
             answer, meta = AgentService.ask(
                 document_id=session.document.id,
-                pdf_path=session.document.file.path,
+                pdf_path=document_path,
                 question=question,
                 chat_history=history,
             )
 
-            # 3) записваме assistant message
             assistant_msg = Message.objects.create(
                 session=session,
                 role=Message.Role.ASSISTANT,
