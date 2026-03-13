@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import ChatSession, Message
 from .serializers import ChatSessionSerializer, MessageSerializer, AskSerializer
-from apps.agent.services import AgentService
+from apps.agent.services import AgentServiceDBMemory
 
 
 class ChatSessionViewSet(ModelViewSet):
@@ -39,10 +39,13 @@ class ChatSessionViewSet(ModelViewSet):
         question = serializer.validated_data["question"]
 
         history_qs = session.messages.order_by("-created_at")[:20]
-        history = [
-            {"role": message.role, "content": message.content}
-            for message in reversed(list(history_qs))
-        ]
+        history_messages = list(reversed(list(history_qs)))
+
+        # history_qs = session.messages.order_by("-created_at")[:20]
+        # history = [
+        #     {"role": message.role, "content": message.content}
+        #     for message in reversed(list(history_qs))
+        # ]
 
         document_path = session.document.file.path
 
@@ -54,12 +57,19 @@ class ChatSessionViewSet(ModelViewSet):
                 metadata={},
             )
 
-            answer, meta = AgentService.ask(
+            answer, meta = AgentServiceDBMemory.ask(
                 document_id=session.document.id,
                 pdf_path=document_path,
                 question=question,
-                chat_history=history,
+                chat_history=history_messages,
             )
+
+            # answer, meta = AgentServiceInMemory.ask(
+            #     document_id=session.document.id,
+            #     pdf_path=document_path,
+            #     question=question,
+            #     chat_history=history,x
+            # )
 
             assistant_msg = Message.objects.create(
                 session=session,

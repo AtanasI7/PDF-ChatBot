@@ -10,6 +10,70 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains.history_aware_retriever import create_history_aware_retriever
+from langchain_classic.chains.retrieval import create_retrieval_chain
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+
+def build_history_aware_rag_chain(
+    vectorstore,
+    llm_model: str = "gpt-4o-mini",
+    k: int = 4,
+):
+    """
+    Build a RAG chain that:
+    1. Uses chat history to rewrite the current user question into a standalone question
+    2. Retrieves relevant chunks from the vector store
+    3. Answers using only the retrieved context
+    """
+    llm = ChatOpenAI(model=llm_model, temperature=0)
+
+    retriever = vectorstore.as_retriever(search_kwargs={"k": k})
+
+    contextualize_q_prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "Given the chat history and the latest user question, "
+                "rewrite the latest question so it becomes a standalone question. "
+                "Do not answer the question. Only rewrite it if needed, otherwise return it as-is.",
+            ),
+            MessagesPlaceholder("chat_history"),
+            ("user", "{input}"),
+        ]
+    )
+
+    history_aware_retriever = create_history_aware_retriever(
+        llm,
+        retriever,
+        contextualize_q_prompt,
+    )
+
+    qa_prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "You are an expert document assistant.\n"
+                "Answer the user's question using ONLY the provided context from the PDF.\n"
+                "Rules:\n"
+                "1. Do not use outside knowledge.\n"
+                "2. If the answer is in the context, answer clearly and concisely.\n"
+                "3. If the answer is not in the context, say that it is not found in the provided excerpts.\n"
+                "4. Do not hallucinate.\n"
+                "5. Keep the answer concise but useful.",
+            ),
+            MessagesPlaceholder("chat_history"),
+            ("user", "Question: {input}\n\nContext:\n{context}"),
+        ]
+    )
+
+    question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
+    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+
+    return rag_chain
+
 
 def build_chat_rag_chain(
     vectorstore,
