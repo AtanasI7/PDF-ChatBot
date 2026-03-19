@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,20 @@ class AgentServiceDBMemory:
 
         return str(index_dir)
 
+    @classmethod
+    def delete_document_index(cls, document) -> None:
+        index_dir = cls.get_index_dir(document.id)
+        if index_dir.exists() and index_dir.is_dir():
+            shutil.rmtree(index_dir)
+
+    @classmethod
+    def rebuild_document_index(cls, document) -> str:
+        cls.delete_document_index(document)
+        return cls.build_document_index(document)
+
+    # TODO: possible changes
+    # 1. Индексът се пази по document_id - Това е ок, но ако файлът се обнови, трябва да rebuild-неш индекса.
+    # 2. Индексът се пази по document_id - Това е ок, но ако файлът се обнови, трябва да rebuild-неш индекса.
     @classmethod
     def ask(
         cls,

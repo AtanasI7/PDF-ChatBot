@@ -6,13 +6,22 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .models import ChatSession, Message
-from .serializers import ChatSessionSerializer, MessageSerializer, AskSerializer
+from .serializers import MessageSerializer, AskSerializer, ChatSessionListSerializer, ChatSessionDetailSerializer, \
+    ChatSessionCreateSerializer
 from apps.agent.services import AgentServiceDBMemory
 
 
 class ChatSessionViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
-    serializer_class = ChatSessionSerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ChatSessionListSerializer
+        if self.action == "retrieve":
+            return ChatSessionDetailSerializer
+        if self.action == "create":
+            return ChatSessionCreateSerializer
+        return ChatSessionDetailSerializer
 
     def get_queryset(self):
         return ChatSession.objects.select_related("document").filter(owner=self.request.user)
@@ -20,8 +29,14 @@ class ChatSessionViewSet(ModelViewSet):
     @action(detail=True, methods=["get"], url_path="messages")
     def messages(self, request, pk=None):
         session = self.get_object()
-        qs = session.messages.all()
-        serializer = MessageSerializer(qs, many=True)
+        queryset = session.messages.all().order_by("created_at")
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = MessageSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = MessageSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=["post"], url_path="ask")
