@@ -20,4 +20,13 @@ def split_docs(
         chunk_overlap=chunk_overlap,
         separators=["\n\n", "\n", " ", ""],
     )
-    return splitter.split_documents(docs)
+
+    chunks = splitter.split_documents(docs)
+
+    for idx, chunk in enumerate(chunks):
+        chunk.metadata.setdefault("source", chunk.metadata.get("source"))
+        chunk.metadata.setdefault("page", chunk.metadata.get("page"))
+        chunk.metadata["chunk_index"] = idx
+        chunk.metadata["source_name"] = str(chunk.metadata.get("source", "")).split("/")[-1]
+
+    return chunks

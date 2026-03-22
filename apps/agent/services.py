@@ -44,6 +44,34 @@ class AgentServiceDBMemory:
         cls.delete_document_index(document)
         return cls.build_document_index(document)
 
+    @staticmethod
+    def _serialize_source_docs(source_docs):
+        seen = set()
+        citations = []
+
+        for rank, doc in enumerate(source_docs, start=1):
+            page = doc.metadata.get("page")
+            source = doc.metadata.get("source")
+            chunk_index = doc.metadata.get("chunk_index")
+
+            key = (source, page, chunk_index)
+            if key in seen:
+                continue
+            seen.add(key)
+
+            citations.append(
+                {
+                    "id": rank,
+                    "source": source,
+                    "source_name": doc.metadata.get("source_name"),
+                    "page": page,
+                    "chunk_index": chunk_index,
+                    "excerpt": doc.page_content[:500],
+                }
+            )
+
+        return citations
+
     # TODO: possible changes
     # 1. Индексът се пази по document_id - Това е ок, но ако файлът се обнови, трябва да rebuild-неш индекса.
     # 2. Индексът се пази по document_id - Това е ок, но ако файлът се обнови, трябва да rebuild-неш индекса.
@@ -55,7 +83,7 @@ class AgentServiceDBMemory:
         pdf_path: str,
         question: str,
         chat_history: list[Any],
-        k: int = 4,
+        k: int = 6,
         llm_model: str = "gpt-4o-mini",
     ) -> tuple[str, dict]:
         index_dir = cls.get_index_dir(document_id)
@@ -86,17 +114,11 @@ class AgentServiceDBMemory:
         answer_text = result.get("answer", "")
         source_docs = result.get("context", [])
 
-        sources_payload = [
-            {
-                "source": doc.metadata.get("source"),
-                "page": doc.metadata.get("page"),
-                "excerpt": doc.page_content[:500],
-            }
-            for doc in source_docs
-        ]
+        citations = cls._serialize_source_docs(source_docs)
 
         metadata = {
-            "sources": sources_payload,
+            "citations": citations,
+            "sources": len(source_docs),
         }
 
         return answer_text, metadata

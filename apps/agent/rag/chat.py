@@ -20,7 +20,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 def build_history_aware_rag_chain(
     vectorstore,
     llm_model: str = "gpt-4o-mini",
-    k: int = 4,
+    k: int = 6,
 ):
     """
     Build a RAG chain that:
@@ -28,9 +28,15 @@ def build_history_aware_rag_chain(
     2. Retrieves relevant chunks from the vector store
     3. Answers using only the retrieved context
     """
-    llm = ChatOpenAI(model=llm_model, temperature=0)
+    llm = ChatOpenAI(
+        model=llm_model,
+        temperature=0,
+    )
 
-    retriever = vectorstore.as_retriever(search_kwargs={"k": k})
+    retriever = vectorstore.as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": k},
+    )
 
     contextualize_q_prompt = ChatPromptTemplate.from_messages(
         [
@@ -55,14 +61,16 @@ def build_history_aware_rag_chain(
         [
             (
                 "system",
-                "You are an expert document assistant.\n"
+                "You are an expert PDF document assistant.\n"
                 "Answer the user's question using ONLY the provided context from the PDF.\n"
                 "Rules:\n"
-                "1. Do not use outside knowledge.\n"
-                "2. If the answer is in the context, answer clearly and concisely.\n"
-                "3. If the answer is not in the context, say that it is not found in the provided excerpts.\n"
-                "4. Do not hallucinate.\n"
-                "5. Keep the answer concise but useful.",
+                "1. Do not use outside knowledge.\n"           
+                "2. If the answer is fully supported by the context, answer clearly and directly.\n"
+                "3. If the answer is only partially supported, explicitly say what is supported and what is unclear.\n"
+                "4. If the answer is not in the context, say so clearly.\n"
+                "5. When useful, refer to evidence using page references like '(see page 3)'.\n"
+                "6. Do not invent facts, dates, names, or conclusions.\n"
+                "7. Keep the answer concise but informative."
             ),
             MessagesPlaceholder("chat_history"),
             ("user", "Question: {input}\n\nContext:\n{context}"),
