@@ -13,6 +13,8 @@ from apps.agent.rag.indexing import build_faiss_index, load_faiss_index, save_fa
 from apps.agent.rag.ingestion import load_pdf
 from apps.agent.rag.qa import answer_question
 
+
+
 class AgentServiceDBMemory:
     @staticmethod
     def get_index_dir(document_id: int) -> Path:

@@ -35,7 +35,6 @@ PROJECT_APPS = [
     'apps.chats',
     'apps.users',
     'apps.documents',
-    # 'apps.quickstrart'
 ]
 
 INSTALLED_APPS = [
@@ -194,4 +193,4 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024  # 20MB
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'

@@ -3,7 +3,7 @@ from django.db import models
 
 from django.conf import settings
 
-from apps.chats.choices import Role
+
 from apps.documents.models import Document
 
 
