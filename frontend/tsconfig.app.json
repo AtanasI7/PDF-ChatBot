@@ -1,3 +1,23 @@
+// TypeScript конфигурация за приложението (src/).
+//
+// Ключови опции (обясннени):
+//
+// - target: "ES2023"             - компилираме към модерен JS (всички browsers
+//                                    от 2023 нагоре). Vite допълнително може да
+//                                    транспилира за по-стари browsers при build.
+// - lib: ["ES2023", "DOM", ...]  - кои типове са достъпни. DOM = browser APIs.
+// - jsx: "react-jsx"             - new JSX transform (no `import React`).
+// - strict: true                 - всички строги проверки включени.
+// - verbatimModuleSyntax: true   - изисква explicit `import type {...}` за
+//                                    type-only imports. Сигнал за TS, че
+//                                    някои import-и трябва да се elimin-ат
+//                                    при компилация.
+// - noUnusedLocals/Parameters    - грешка при неизползвани променливи.
+// - erasableSyntaxOnly: true     - забранява features (enum, namespace), които
+//                                    не са pure type stripping.
+// - moduleResolution: "bundler"  - оптимизирано за bundler-и като Vite.
+// - noEmit: true                 - НЕ генерирай .js файлове - това го прави
+//                                    Vite. tsc-ът само проверява типове.
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",

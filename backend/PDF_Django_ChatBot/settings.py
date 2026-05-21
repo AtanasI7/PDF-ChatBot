@@ -113,6 +113,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+CORS_ALLOW_ALL_ORIGINS = False  # вече е така
+CORS_URLS_REGEX = r".*"  # покрива всички URLs, не само /api/
+
 REST_AUTH = {
     'USE_JWT': True,
     # 'JWT_AUTH_COOKIE': 'access-token',

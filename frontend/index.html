@@ -1,10 +1,27 @@
+<!--
+  index.html - HTML страницата, която браузърът зарежда.
+
+  Vite инжектира скриптове и стилове автоматично - не пипай тага
+  <script type="module" src="/src/main.tsx">.
+
+  При build (npm run build) Vite ще:
+  - bundleва TypeScript/JSX
+  - минифицира CSS
+  - добавя hash към имената на файловете за cache busting
+  - инжектира финалните URL-и тук
+
+  Полезно за бъдеще:
+  - <meta name="description"> за SEO (ако правим публична страница)
+  - Open Graph tags за social sharing
+  - <link rel="manifest"> ако правим PWA
+-->
 <!doctype html>
-<html lang="en">
+<html lang="bg">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>PDF ChatBot</title>
   </head>
   <body>
     <div id="root"></div>

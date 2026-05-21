@@ -1,3 +1,17 @@
+// Root TypeScript конфигурация.
+//
+// Този файл не съдържа реални compiler options - той просто "сглобява"
+// двата под-config-а чрез "project references" feature на TypeScript:
+//
+// - tsconfig.app.json   - конфигурация за src/ (приложението)
+// - tsconfig.node.json  - конфигурация за vite.config.ts (Node.js контекст)
+//
+// Защо две отделни конфигурации?
+// Защото те имат различни нужди:
+// - app/   - runs in browser - lib включва DOM, types за browser globals
+// - node/  - runs in Node.js (Vite config) - lib без DOM, types за Node
+//
+// При npm run build, `tsc -b` следва references и компилира всеки proj.
 {
   "files": [],
   "references": [
